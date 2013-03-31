@@ -1,6 +1,6 @@
 # Crocodoc: Viewer.js Demos #
 
-Play with these demos to get familiar with the new [Viewer.js](http://preview.crocodoc.com/docs/viewer.js). Keep in mind, Viewer.js is in beta, and there are some layouts that haven't been implemented, and there are sure to be bugs. If you encounter any bugs, please let us know! In this repo, you'll find a small set of demos that highlight some of the cool things that the new viewer is capable of. We invite you to fork this repo and play with the code, and even build your own viewer demos!
+Play with these demos to get familiar with Crocodoc's new [Viewer.js](http://preview.crocodoc.com/docs/viewer.js) library. Keep in mind that Viewer.js is in beta, there are some layouts that haven't yet been implemented, and there are sure to be bugs. If you encounter any issues, please let us know! In this repo, you'll find a small set of demos that highlight some of the powerful things Crocodoc's new viewer is capable of. We invite you to fork this repo and play with the code, and even build your own viewer demos!
 
 ## What's Inside ##
 
