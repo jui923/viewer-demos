@@ -7,6 +7,6 @@ Play with these demos to get familiar with the new [Viewer.js](http://preview.cr
 You'll find the following files in this repo (_more to come!_):
 
 * `basic.html` - [Standard Document Viewer](https://preview.crocodoc.com/docs/demos#vertical): Pages are scrolled vertically.
-* `slideshow.html` - [Slideshow Viewer](https://preview.crocodoc.com/docs/demos#slideshow): Presentation mode with expandable thumbnails.
 * `book.html` - [Book Viewer](https://preview.crocodoc.com/docs/demos#book): Presentation (two-page) mode with 3D page-flip transitions.
 * `carousel.html` - [Carousel Viewer](https://preview.crocodoc.com/docs/demos#carousel): Presentation mode that rotates in 3D.
+* `slideshow.html` - [Slideshow Viewer](https://preview.crocodoc.com/docs/demos#slideshow): Presentation mode with expandable thumbnails.
