@@ -1,0 +1,207 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Crocodoc Viewer Demos - Slideshow</title>
+<link rel="stylesheet" href="http://static-preview.crocodoc.com/css/crocodoc.viewer.css" type="text/css" media="screen" />
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
+<script src="http://static-preview.crocodoc.com/js/crocodoc.viewer.min.js"></script>
+<style>
+    .demo { width: 100%; height: 100%; position: absolute; top: 0; left: 0; }
+    .demo.slideshow { background: #eee; }
+    .demo.slideshow .viewer { position: absolute; top: 0; bottom: 200px; left: 0; width: 100%; }
+    .demo.slideshow .thumbnails {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 100px;
+        opacity: 0.01;
+    }
+    .demo.slideshow .thumbnails.expanded { height: 200px; opacity: 1; }
+    .demo.slideshow .thumbnails .crocodoc-doc { background: transparent; overflow: visible; }
+    .demo.slideshow .thumbnails .crocodoc-viewport {
+        overflow-y: hidden;
+        overflow-x: auto;
+    }
+    .demo.slideshow .thumbnails .crocodoc-pages {
+        background: transparent;
+        margin: 0 !important;
+        text-align: left;
+        white-space: nowrap;
+        line-height: 920px; /*magic number*/
+    }
+    .demo.slideshow .thumbnails .crocodoc-page {
+        vertical-align: bottom;
+        -webkit-transition: width 0.2s, height 0.2s;
+        -moz-transition: width 0.2s, height 0.2s;
+        transition: width 0.2s, height 0.2s;
+        cursor: pointer;
+    }
+    .demo.slideshow .thumbnails .crocodoc-page.selected { box-shadow: inset 0 0 0 50px #ff9; }
+    .demo.slideshow .thumbnails .crocodoc-pages { overflow: visible; }
+    .demo.slideshow .thumbnails .crocodoc-doc {
+        padding-right: 0;
+        -webkit-transition: padding-right 0.2s;
+        -moz-transition: padding-right 0.2s;
+        transition: padding-right 0.2s;
+    }
+    .demo.slideshow .thumbnails .crocodoc-doc:hover { padding-right: 120pt; /*magic number*/ }
+
+
+    .demo.slideshow .viewer .crocodoc-page {
+        -webkit-transition: visibility 0s, opacity 0.3s, -webkit-transform 0.25s;
+        -moz-transition: visibility 0s, opacity 0.3s, -moz-transform 0.25s;
+        transition: visibility 0s, opacity 0.3s, transform 0.25s;
+    }
+
+    .demo.slideshow .viewer .crocodoc-page-next {
+        visibility: visible !important;
+    }
+    .demo.slideshow .viewer .crocodoc-current-page {
+        -webkit-transform: none;
+        -moz-transform: none;
+        -ms-transform: none;
+        transform: none;
+        opacity: 1;
+    }
+    .demo.slideshow .viewer .crocodoc-page-before,
+    .demo.slideshow .viewer .crocodoc-page-before-buffer {
+        opacity: 0;
+        -webkit-transform: rotate(-3deg) translate(-12%, -12%);
+        -moz-transform: rotate(-3deg) translate(-12%, -12%);
+        -ms-transform: rotate(-3deg) translate(-12%, -12%);
+        transform: rotate(-3deg) translate(-12%, -12%);
+        -webkit-transition-delay: 0.3s, 0s, 0s;
+        -moz-transition-delay: 0.3s, 0s, 0s;
+        transition-delay: 0.3s, 0s, 0s;
+    }
+    .demo.slideshow .viewer .crocodoc-page-after,
+    .demo.slideshow .viewer .crocodoc-page-after-buffer {
+        -webkit-transition-delay: 0s;
+        -moz-transition-delay: 0s;
+        transition-delay: 0s;
+        opacity: 0;
+    }
+</style>
+
+</head>
+<body>
+<div class="demo slideshow">
+    <!--viewer-->
+    <div class="viewer"></div>
+    <div class="thumbnails"></div>
+</div>
+
+<script>
+    var assetsLocation = 'http://s3.amazonaws.com/crocodoc-preview/5c8f3a11-4660-4ad5-9ca5-29a6d4ca290e/';
+    var viewer, thumbnails, tid;
+    //viewer
+    viewer = new Crocodoc.Viewer({
+        el: ".demo.slideshow .viewer",
+        url: assetsLocation,
+        layout: 'presentation'
+    });
+
+    //thumbnails
+    thumbnails = new Crocodoc.Viewer({
+        el: ".demo.slideshow .thumbnails",
+        url: assetsLocation,
+        layout: "horizontal",
+        minZoom: 0.1
+    });
+
+    //page focus
+    viewer.on("pagefocus", function(e){
+        clearTimeout(tid);
+        tid = setTimeout(function () {
+            $('.crocodoc-page.selected').removeClass('selected');
+            $('.demo.slideshow .thumbnails .crocodoc-page:nth-child('+e.page+')').addClass('selected');
+            // scroll to the page if it's not visible
+            var $t = $('.thumbnails .crocodoc-page').eq(e.page - 1);
+            if ($t.length === 0) return;
+            var w = $t.get(0).getBoundingClientRect().width;
+            if ($t.offset().left < $('.thumbnails').offset().left) thumbnails.scrollTo(e.page);
+            if ($t.offset().left + w > $('.thumbnails').offset().left + $('.thumbnails').width())
+            {
+                thumbnails.scrollTo(e.page - Math.floor($('.thumbnails').width()/w - 1))
+            }
+        }, 100);
+    });
+
+    thumbnails.ready(function(e){
+        //set permenant zoom value
+        thumbnails.zoom(0.2);
+        setTimeout(function () { $('.demo.slideshow .thumbnails').addClass("expanded"); }, 1);
+
+        //select first page
+        $('.demo.slideshow .thumbnails .crocodoc-page:nth-child(1)').addClass('selected');
+
+        // store initial page sizes
+        $('.demo.slideshow .thumbnails .crocodoc-page').each(function () {
+            $(this).data({
+                width: $(this).width(),
+                height: $(this).height()
+            });
+        });
+
+        //add page events handlers
+        $('.demo.slideshow .thumbnails').on('mouseenter', '.crocodoc-page', function(){
+            var $current = $(this),
+                $prev = $current.prev(),
+                $next = $current.next();
+            $current.css({
+                width: $current.data('width') * 1.8,
+                height: $current.data('height') * 1.8
+            });
+            if ($prev.length) {
+                $prev.css({
+                    width: $prev.data('width') * 1.4,
+                    height: $prev.data('height') * 1.4
+                });
+            }
+            if ($next.length) {
+                $next.css({
+                    width: $next.data('width') * 1.4,
+                    height: $next.data('height') * 1.4
+                });
+            }
+        }).on('mouseleave', '.crocodoc-page', function(){
+            var $current = $(this),
+                $prev = $current.prev(),
+                $next = $current.next();
+            $current.css({
+                width: $current.data('width'),
+                height: $current.data('height')
+            });
+            if ($prev.length) {
+                $prev.css({
+                    width: $prev.data('width'),
+                    height: $prev.data('height')
+                });
+            }
+            if ($next.length) {
+                $next.css({
+                    width: $next.data('width'),
+                    height: $next.data('height')
+                });
+            }
+        }).on('click', '.crocodoc-page', function(){
+            var page = $(this).index()+1;
+            viewer.scrollTo(page);
+        });
+    });
+
+    $(window).on('keydown', function (ev) {
+        if (ev.keyCode == 37) viewer.scrollTo('prev');
+        else if (ev.keyCode == 39) viewer.scrollTo('next');
+        else if (!ev.metaKey && !ev.ctrlKey) return true;
+        else if (ev.keyCode == 48) viewer.zoom(1);
+        else if (ev.keyCode == 189) viewer.zoom('out');
+        else if (ev.keyCode == 187) viewer.zoom('in');
+        else return true;
+        ev.preventDefault();
+        return false;
+    });
+</script>
+</body>

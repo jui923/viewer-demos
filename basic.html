@@ -1,0 +1,182 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Crocodoc Viewer Demos - Basic</title>
+<link rel="stylesheet" href="https://static-preview.crocodoc.com/css/crocodoc.viewer.css" type="text/css" media="screen" />
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
+<script src="https://static-preview.crocodoc.com/js/crocodoc.viewer.min.js"></script>
+<style>
+    .demo { width: 100%; height: 100%; position: absolute; top: 0; left: 0; }
+
+    .demo.vertical .viewer { position: absolute; top: 36px; bottom: 0; left: 0; width: 100%; }
+
+    .demo.vertical .toolbar {
+        cursor:default; border-width:1px 0; border-style:solid none; height:34px; font-size:0; white-space:nowrap;
+        background:#f7f7f7 url("http://static-v2.crocodoc.com/images/viewer/toolbar-bg-extended.png") repeat-x 0 center;
+        border-color: #fff #fff #bbb;
+        -webkit-user-select:none; -moz-user-select:none; user-select:none; }
+
+    /*layout*/
+    .demo.vertical .toolbar .zoom-btns,
+    .demo.vertical .toolbar .toolbar-btns { display:inline-block; *float:left; vertical-align:top; margin-top:3px; }
+    .demo.vertical .toolbar .page-nav { position:absolute; top:0; left:0; width:100%; height:0; overflow:visible; text-align:center; margin-top:3px; }
+    .demo.vertical .toolbar .zoom-btns { margin-left:2px; }
+    .demo.vertical .toolbar .zoom-btns .btn { margin-left:4px; }
+    .demo.vertical .toolbar .toolbar-btns .btn { margin-left:8px; }
+
+    /*logo*/
+    .demo.vertical .toolbar .logo {
+        position:absolute; width:90px; height:28px; right:12px; top:5px;
+        background:url("http://static-v2.crocodoc.com/images/viewer/sprites.png") no-repeat -9px -112px; }
+    .demo.vertical .toolbar .logo .text { position:absolute; right:3px; top:0; font-size:9px; color:#999; text-shadow:0 1px #FFF; line-height: 9px; }
+
+    /*button style*/
+    .demo.vertical .toolbar .btn { cursor:pointer; color:#222; border:1px solid; border-radius:2px; display:inline-block; vertical-align:top; height: 25px; }
+    .demo.vertical .toolbar .btn .icon { width:30px; height:25px; display:inline-block; }
+    .demo.vertical .toolbar .btn .text { height:14px; line-height:14px; font-size:14px; padding:6px 7px 5px 28px; display:inline-block; }
+
+    .demo.vertical .toolbar .btn,
+    .demo.vertical .toolbar .btn.disabled:hover {
+        border-color:#d0d0d0;
+        background-image: -webkit-linear-gradient(top, #fdfdfd, #ececec);
+        background-image: -moz-linear-gradient(top, #fdfdfd, #ececec);
+        -webkit-box-shadow: 0 0 0 1px #FFF; -moz-box-shadow: 0 0 0 1px #FFF; box-shadow: 0 0 0 1px #FFF; }
+
+    .demo.vertical .toolbar .btn:hover {
+        border-color:#b6b6b6;
+        background-image: -webkit-linear-gradient(top, #f8f8f8, #e1e1e1);
+        background-image: -moz-linear-gradient(top, #f8f8f8, #e1e1e1); }
+
+    .demo.vertical .toolbar .btn.selected,
+    .demo.vertical .toolbar .btn.active {
+        border-color:#b6b6b6;
+        background-color:#eee;
+        background-image: -webkit-linear-gradient(top, #e1e1e1, #f8f8f8);
+        background-image: -moz-linear-gradient(top, #e1e1e1, #f8f8f8); }
+
+    .demo.vertical .toolbar .btn.disabled { cursor:default; opacity:.3; filter:alpha(opacity=30); -ms-filter:"alpha(opacity=30)"; }
+
+    /*button images*/
+    .demo.vertical .toolbar .zoom-out .icon { background:url("http://static-v2.crocodoc.com/images/viewer/sprites.png") no-repeat -6px -6px; }
+    .demo.vertical .toolbar .zoom-in .icon { background:url("http://static-v2.crocodoc.com/images/viewer/sprites.png") no-repeat -6px -31px; }
+    .demo.vertical .toolbar .prev .icon { background:url("http://static-v2.crocodoc.com/images/viewer/sprites.png") no-repeat -5px -52px; }
+    .demo.vertical .toolbar .next .icon { background:url("http://static-v2.crocodoc.com/images/viewer/sprites.png") no-repeat -5px -74px; }
+    .demo.vertical .toolbar .annotate .text { background:url("http://static-v2.crocodoc.com/images/viewer/sprites.png") no-repeat -4px -188px; }
+    .demo.vertical .toolbar .download .icon { background:url("http://static-v2.crocodoc.com/images/viewer/download.png") no-repeat 7px 4px; }
+
+    /*navigation*/
+    .demo.vertical .toolbar .current-page {
+        color:#333; font-family:Arial; font-size:14px; vertical-align:top; margin:2px 4px 0; padding:2px 0; text-align:center;
+        width:65px; background:transparent; border:1px solid transparent; text-shadow:0 1px #fcfcfc; }
+    .demo.vertical .toolbar .current-page.active,
+    .demo.vertical .toolbar .current-page:hover { border-color:silver; background-color:#ffd; }
+    .demo.vertical .toolbar .current-page.active { -webkit-user-select:text; -moz-user-select:text; user-select:text; }
+</style>
+</head>
+<body>
+<div class="demo vertical">
+    <div class="toolbar">
+        <!--zoom buttons-->
+        <div class="zoom-btns">
+            <span class="btn zoom-out"><span class="icon"></span></span>
+            <span class="btn zoom-in"><span class="icon"></span></span>
+        </div>
+
+        <!--page navigation-->
+        <div class="page-nav">
+            <span class="btn prev disabled"><span class="icon"></span></span>
+            <input class="current-page" value="1 of 1" autocomplete="off">
+            <span class="btn next"><span class="icon"></span></span>
+        </div>
+
+        <!--logo-->
+        <div class="logo"><div class="text">Powered by</div></div>
+    </div>
+    <!--viewer-->
+    <div class="viewer"></div>
+</div>
+
+<script>
+    var assetsLocation = 'http://s3.amazonaws.com/crocodoc-preview/5c8f3a11-4660-4ad5-9ca5-29a6d4ca290e/';
+    var viewer = new Crocodoc.Viewer({
+        el: ".demo.vertical .viewer",
+        url: assetsLocation
+    });
+
+    viewer.ready(function(e){
+        //Viewer state
+        var currentpage = 1;
+        var numpages = e.numPages;
+        updateButtonState();
+
+        //Helper methods ----------------------------
+        function updateButtonState() {
+            $('.current-page').val(currentpage + ' of ' + numpages);
+            $('.prev').toggleClass('disabled', currentpage == 1 );
+            $('.next').toggleClass('disabled', currentpage == numpages );
+        }
+
+        //Toolbar events ----------------------------
+        $('.zoom-in').click(function() {
+            viewer.zoom('in');
+        });
+        $('.zoom-out').click(function() {
+            viewer.zoom('out');
+        });
+        $('.prev').click(function() {
+            viewer.scrollTo('prev');
+        });
+        $('.next').click(function() {
+            viewer.scrollTo('next');
+        });
+        $('.current-page').click(function(){
+            $(this).addClass('active').val(currentpage).select();
+        });
+        $('.current-page').keyup(function(e){
+            if(e.which == 13) {
+                $(this).blur();
+            }
+        });
+        $('.current-page').blur(function(){
+            $(this).removeClass('active');
+            var num = Number($(this).val());
+            if(num != currentpage && num > 0 && num <= numpages) {
+                viewer.scrollTo(num);
+            }
+            else {
+                updateButtonState();
+            }
+        });
+
+        //Button events -----------------------------
+        $('.btn').mousedown(function(){
+            var jBtn = $(this);
+            if (!jBtn.hasClass('disabled')) {
+                jBtn.addClass('active');
+            }
+        });
+        $(document.body).mouseup(function(){
+            $('.btn.active').removeClass('active');
+        });
+
+        //Viewer events -----------------------------
+        viewer.on('pagefocus', function(e) {
+            currentpage = e.page;
+            updateButtonState();
+        });
+    });
+
+    $(window).on('keydown', function (ev) {
+        if (ev.keyCode == 37) viewer.scrollTo('prev');
+        else if (ev.keyCode == 39) viewer.scrollTo('next');
+        else if (!ev.metaKey && !ev.ctrlKey) return true;
+        else if (ev.keyCode == 48) viewer.zoom(1);
+        else if (ev.keyCode == 189) viewer.zoom('out');
+        else if (ev.keyCode == 187) viewer.zoom('in');
+        else return true;
+        ev.preventDefault();
+        return false;
+    });
+</script>
+</body>
